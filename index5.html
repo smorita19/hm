@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>予防医療実施項目リスト</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #2C3E50;
+        }
+        form {
+            background-color: #ECF0F1;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input[type="number"],
+        select,
+        button {
+            display: block;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2980B9;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+        button:hover {
+            background-color: #3498DB;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #BDC3C7;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #34495E;
+            color: white;
+        }
+        td {
+            background-color: #FDFEFE;
+        }
+        .highlight {
+            background-color: #FFFF99; /* 黄色 */
+        }
+    </style>
+</head>
+<body>
+    <h1>予防医療実施項目リスト</h1>
+    <form id="inputForm">
+        <label for="age">年齢:</label>
+        <input type="number" id="age" name="age" required>
+        
+        <label for="gender">性別:</label>
+        <select id="gender" name="gender" required>
+            <option value="male">男性</option>
+            <option value="female">女性</option>
+        </select>
+        
+        <label for="smoking">喫煙歴:</label>
+        <select id="smoking" name="smoking" required>
+            <option value="none">なし</option>
+            <option value="current">現在喫煙中</option>
+            <option value="former">過去に喫煙</option>
+        </select>
+        
+        <button type="button" onclick="generateList()">リストを生成</button>
+    </form>
+    
+    <div id="result">
+        <!-- 結果がここに表示されます -->
+    </div>
+    
+    <script>
+        function generateList() {
+            const age = document.getElementById('age').value;
+            const gender = document.getElementById('gender').value;
+            const smoking = document.getElementById('smoking').value;
+
+            let results = {
+                "予防接種": [],
+                "がん検診": [],
+                "生活習慣病": [],
+                "全般": [],
+                "特定の方に": []
+            };
+
+            // 予防接種のロジック
+            if (age >= 65) {
+                results["予防接種"].push('肺炎球菌');
+            }
+            results["予防接種"].push('インフルエンザ');
+            results["予防接種"].push('破傷風');
+            if (age >= 19 && age <= 59 || (age >= 60 && (gender === 'male' || smoking === 'current' || smoking === 'former'))) {
+                results["予防接種"].push('B型肝炎');
+            }
+            if (age >= 50) {
+                results["予防接種"].push('帯状疱疹');
+            }
+            if (gender === 'female' && age <= 26) {
+                results["予防接種"].push('HPV');
+            }
+            results["予防接種"].push('麻疹・風疹');
+            results["予防接種"].push('新型コロナウイルス');
+
+            // がん検診のロジック
+            if (age >= 45 && age <= 75) {
+                results["がん検診"].push('大腸がん');
+            }
+            if (age >= 50) {
+                results["がん検診"].push('胃がん');
+                results["がん検診"].push('乳がん');
+            }
+            if (gender === 'female' && age >= 21 && age <= 65) {
+                results["がん検診"].push('子宮頸がん');
+            }
+            if (age >= 50 && smoking !== 'none') {
+                results["がん検診"].push('肺がん');
+            }
+
+            // 生活習慣病のロジック
+            results["生活習慣病"].push('高血圧');
+            results["生活習慣病"].push('脂質異常症');
+            results["生活習慣病"].push('糖尿病');
+            results["生活習慣病"].push('肥満');
+            if (smoking !== 'none') {
+                results["生活習慣病"].push('禁煙指導');
+            }
+            results["生活習慣病"].push('飲酒指導');
+            results["生活習慣病"].push('定期的な運動指導');
+            results["生活習慣病"].push('歯科受診');
+
+            // 全般のロジック
+            if (age >= 65) {
+                results["全般"].push('骨粗鬆症');
+                results["全般"].push('転倒予防');
+            }
+            if (age >= 65 && gender === 'male' && (smoking === 'current' || smoking === 'former')) {
+                results["全般"].push('腹部大動脈瘤');
+            }
+            if (gender === 'female' && age <= 24) {
+                results["全般"].push('淋菌・クラミジア感染症');
+            }
+            results["全般"].push('C型肝炎');
+            results["全般"].push('うつ病');
+
+            // 特定の方にのロジック
+            if (smoking !== 'none' || gender === 'female' && age <= 24) {
+                results["特定の方に"].push('性行為感染症の危険性が高い方に：HIV・梅毒・B型肝炎・淋菌・クラミジア');
+            }
+            if (gender === 'female' && age <= 24) {
+                results["特定の方に"].push('妊娠を考えている方に：葉酸毎日400μg内服');
+            }
+            if (age >= 65) {
+                results["特定の方に"].push('ご高齢の方に：介護保険・ACP・事前指示');
+            }
+
+            // 結果をHTMLに変換
+            let resultHTML = '';
+            for (const category in results) {
+                if (results[category].length > 0) {
+                    resultHTML += `<h3>${category}</h3><table><thead><tr><th>項目</th><th>実施済み</th><th>実施日</th></tr></thead><tbody>`;
+                    results[category].forEach(item => {
+                        resultHTML += `
+                            <tr>
+                                <td>${item}</td>
+                                <td><input type="checkbox" onchange="highlightRow(this)"></td>
+                                <td><input type="date"></td>
+                            </tr>
+                        `;
+                    });
+                    resultHTML += '</tbody></table>';
+                }
+            }
+
+            document.getElementById('result').innerHTML = resultHTML;
+        }
+
+        function highlightRow(checkbox) {
+            const row = checkbox.closest('tr');
+            if (checkbox.checked) {
+                row.classList.remove('highlight');
+            } else {
+                row.classList.add('highlight');
+            }
+        }
+    </script>
+</body>
+</html>
